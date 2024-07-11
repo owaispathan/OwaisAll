@@ -1,0 +1,89 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_OwaisVM_name": {
+            "defaultValue": "OwaisVM",
+            "type": "String"
+        },
+        "disks_OwaisVM_OsDisk_1_a7a4013a96bf46b4875a1b4dcda294c5_externalid": {
+            "defaultValue": "/subscriptions/6cd9aa65-6263-4d45-b981-7ce503f4f040/resourceGroups/OwaisRG/providers/Microsoft.Compute/disks/OwaisVM_OsDisk_1_a7a4013a96bf46b4875a1b4dcda294c5",
+            "type": "String"
+        },
+        "networkInterfaces_owaisvm885_z1_externalid": {
+            "defaultValue": "/subscriptions/6cd9aa65-6263-4d45-b981-7ce503f4f040/resourceGroups/OwaisRG/providers/Microsoft.Network/networkInterfaces/owaisvm885_z1",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2024-03-01",
+            "name": "[parameters('virtualMachines_OwaisVM_name')]",
+            "location": "westeurope",
+            "zones": [
+                "1"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_D4s_v5"
+                },
+                "additionalCapabilities": {
+                    "hibernationEnabled": false
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2022-datacenter-g2",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Windows",
+                        "name": "[concat(parameters('virtualMachines_OwaisVM_name'), '_OsDisk_1_a7a4013a96bf46b4875a1b4dcda294c5')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "id": "[parameters('disks_OwaisVM_OsDisk_1_a7a4013a96bf46b4875a1b4dcda294c5_externalid')]"
+                        },
+                        "deleteOption": "Delete"
+                    },
+                    "dataDisks": [],
+                    "diskControllerType": "SCSI"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_OwaisVM_name')]",
+                    "adminUsername": "qdsadmin",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "enableAutomaticUpdates": true,
+                        "patchSettings": {
+                            "patchMode": "AutomaticByOS",
+                            "assessmentMode": "ImageDefault",
+                            "enableHotpatching": false
+                        }
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('networkInterfaces_owaisvm885_z1_externalid')]",
+                            "properties": {
+                                "deleteOption": "Detach"
+                            }
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                }
+            }
+        }
+    ]
+}
